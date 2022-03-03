@@ -35,25 +35,41 @@ public class GameControl : MonoBehaviour
             }
         }
 
-        testTile.transform.SetParent(backgraundTiles[3].transform);
+        //testTile.transform.SetParent(backgraundTiles[3].transform);
 
     }
 
     // Update is called once per frame 
     void Update()
     {
-        if (Input.GetKey(KeyCode.UpArrow)) { }
-        else if (Input.GetKey(KeyCode.DownArrow)) { }
-        else if (Input.GetKey(KeyCode.LeftArrow)) { }
-        else if (Input.GetKey(KeyCode.RightArrow) && canInput == false)
+        if (Input.GetKeyDown(KeyCode.UpArrow)) 
         {
-            canInput = true;
-            int nextPosition = testTile.currentPosition + 1;
-            testTile.transform.SetParent(backgraundTiles[nextPosition].transform);
-            testTile.currentPosition = nextPosition;
-            UnityEngine.Debug.Log(nextPosition);
-            canInput = false;
+            MoveTile(-4); 
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) 
+        {
+            MoveTile(4);
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) 
+        {
+            MoveTile(-1);
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            MoveTile(1);
         }
 
+    }
+    void MoveTile(int offset) 
+    {
+        int nextPosition = testTile.currentPosition + offset ;
+        if(nextPosition < 0 || nextPosition >= TILEMAXNUM * TILEMAXNUM) 
+        {
+            return;
+        }
+        testTile.transform.SetParent(backgraundTiles[nextPosition].transform);
+        testTile.transform.localPosition = new Vector3(0, 0, 0);
+        testTile.currentPosition = nextPosition;
+        UnityEngine.Debug.Log(nextPosition);
     }
 }
