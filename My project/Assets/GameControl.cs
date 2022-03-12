@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class GameControl : MonoBehaviour
 {
     public enum tileType 
-    { 
+    {
        None,
        Num_2,
        Num_4,
@@ -24,7 +25,7 @@ public class GameControl : MonoBehaviour
     public Tile testTile;
     public BuckgraundTile[] backgraundTiles;
     public GameObject tileTemplate;
-    private bool canInput = false;
+    private GameObject destroyObj;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,9 +40,6 @@ public class GameControl : MonoBehaviour
 
         //testTile.transform.SetParent(backgraundTiles[3].transform);
 
-
-        var tile = Instantiate(tileTemplate);
-        tile.transform.SetParent(backgraundTiles[3].transform);
     }
 
     // Update is called once per frame 
@@ -101,16 +99,24 @@ public class GameControl : MonoBehaviour
 
     void CreateTile()
     {
+        //if(destroyObj != null)
+        //{
+        //    Destroy(destroyObj);
+        //}
         var noneTypeBackgraunds = backgraundTiles 
             .Where(tile => tile.tileType == tileType.None) //Where(LInq)は一致する要素だけを返す
             .ToArray(); //型をArray型にする（Linqは遅延評価になる。それを評価している）
         
         //typeがNoneのものだけを入れたリスト内で乱数の生成を行う
-        var randomNum = Random.Range(0, noneTypeBackgraunds.Length);
+        var randomNum = UnityEngine.Random.Range(0, noneTypeBackgraunds.Length);
+        var enumList = Enum.GetValues(typeof(tileType));
+        var enumRandomNum = UnityEngine.Random.Range(0, enumList.Length);
         //objectの生成。生成する元となるテンプレートはtileTemplate
         var tile = Instantiate(tileTemplate);
+        tile.GetComponent<Tile>().SetTile((tileType)enumRandomNum);
         //生成する親をきめる
         tile.transform.SetParent(noneTypeBackgraunds[randomNum].transform);
         tile.transform.localPosition = new Vector3(0, 0, 0);
+        destroyObj = tile;
     }
 }
