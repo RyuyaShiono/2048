@@ -6,26 +6,27 @@ using System;
 
 public class GameControl : MonoBehaviour
 {
-    public enum tileType 
+    public enum tileType
     {
-       None,
-       Num_2,
-       Num_4,
-       Num_8,
-       Num_16,
-       Num_32,
-       Num_64,
-       Num_128,
-       Num_256,
-       Num_512,
-       Num_1024,
-       Num_2048,
+        None,
+        Num_2,
+        Num_4,
+        Num_8,
+        Num_16,
+        Num_32,
+        Num_64,
+        Num_128,
+        Num_256,
+        Num_512,
+        Num_1024,
+        Num_2048,
     }
     const int TILEMAXNUM = 4;
     public Tile testTile;
     public BuckgraundTile[] backgraundTiles;
     public GameObject tileTemplate;
     private GameObject destroyObj;
+    private tileType[] randumInstantiateType = new[] { tileType.Num_2, tileType.Num_4 };
     // Start is called before the first frame update
     void Start()
     {
@@ -110,10 +111,11 @@ public class GameControl : MonoBehaviour
         //typeがNoneのものだけを入れたリスト内で乱数の生成を行う
         var randomNum = UnityEngine.Random.Range(0, noneTypeBackgraunds.Length);
         var enumList = Enum.GetValues(typeof(tileType));
-        var enumRandomNum = UnityEngine.Random.Range(0, enumList.Length);
+        var enumRandomNum = UnityEngine.Random.Range(0, randumInstantiateType.Length);
         //objectの生成。生成する元となるテンプレートはtileTemplate
         var tile = Instantiate(tileTemplate);
-        tile.GetComponent<Tile>().SetTile((tileType)enumRandomNum);
+        tile.GetComponent<Tile>().SetTile(randumInstantiateType[enumRandomNum]);
+        tile.GetComponent<Tile>().tileType = randumInstantiateType[enumRandomNum];
         //生成する親をきめる
         tile.transform.SetParent(noneTypeBackgraunds[randomNum].transform);
         tile.transform.localPosition = new Vector3(0, 0, 0);
