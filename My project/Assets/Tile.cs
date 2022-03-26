@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
-    public GameControl.tileType tileType = GameControl.tileType.Num_2;
+    public GameControl.tileType tileType = GameControl.tileType.None;
     public int currentPosition = 0;
     public Text text;
     public void SetTile(GameControl.tileType type) 
