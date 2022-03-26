@@ -22,11 +22,11 @@ public class GameControl : MonoBehaviour
         Num_2048,
     }
     const int TILEMAXNUM = 4;
-    public Tile testTile;
     public BuckgraundTile[] backgraundTiles;
     public GameObject tileTemplate;
     private GameObject destroyObj;
     private tileType[] randumInstantiateType = new[] { tileType.Num_2, tileType.Num_4 };
+    private List<Tile> tileData = new List<Tile>(); 
     // Start is called before the first frame update
     void Start()
     {
@@ -50,51 +50,60 @@ public class GameControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow)) 
         {
             //tileを動かす。上に動かすのでoffsetは-4
-            MoveTile(-4);
+            MoveTiles(-4);
         }
         //下矢印キーが押されたとき
         else if (Input.GetKeyDown(KeyCode.DownArrow)) 
         {
             //tileを動かす。下に動かすのでoffsetは＋4
-            MoveTile(4);
+            MoveTiles(4);
         }
         //左矢印キーが押されたとき
         else if (Input.GetKeyDown(KeyCode.LeftArrow)) 
         {
             //tileを動かす。左に動かすのでoffsetは-1
-            MoveTile(-1);
+            MoveTiles(-1);
         }
         //右矢印キーが押されたとき
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             //tileを動かす。右に動かすのでoffsetは＋1
-            MoveTile(1);
+            MoveTiles(1);
         }
 
+    }
+    void MoveTiles(int offset)
+    {
+        var protoTileData = tileData.ToList();
+        foreach (var tile in protoTileData)
+        {
+            MoveTile(offset,tile);
+        }
     }
     /// <summary>
     /// tileを移動させる
     /// </summary>
     /// <param name="offset">どれだけ移動するかの値</param>
-    void MoveTile(int offset) 
+    
+    void MoveTile(int offset,Tile tile) 
     {
         //移動する予定の位置を算出
-        int nextPosition = testTile.currentPosition + offset ;
+        int nextPosition = tile.currentPosition + offset ;
         //移動する範囲の指定。移動する予定の位置が0より小さい又は16以上の時なにもしない
         if(nextPosition < 0 || nextPosition >= TILEMAXNUM * TILEMAXNUM) 
         {
             return;
         }
         //親を変えることによって移動する
-        testTile.transform.SetParent(backgraundTiles[nextPosition].transform);
+        tile.transform.SetParent(backgraundTiles[nextPosition].transform);
         //親基準の位置に合わせる
-        testTile.transform.localPosition = new Vector3(0, 0, 0);
+        tile.transform.localPosition = new Vector3(0, 0, 0);
         //タイルの現在の位置を保存しているcurrentPositionを更新
-        testTile.currentPosition = nextPosition;
+        tile.currentPosition = nextPosition;
         //親の現在のタイプを更新
-        backgraundTiles[nextPosition].tileType = testTile.tileType;
+        backgraundTiles[nextPosition].tileType = tile.tileType;
         //移動する前の親のタイプを初期化
-        backgraundTiles[testTile.currentPosition].tileType = tileType.None;
+        backgraundTiles[tile.currentPosition].tileType = tileType.None;
         CreateTile();
     }
 
@@ -113,12 +122,14 @@ public class GameControl : MonoBehaviour
         var enumList = Enum.GetValues(typeof(tileType));
         var enumRandomNum = UnityEngine.Random.Range(0, randumInstantiateType.Length);
         //objectの生成。生成する元となるテンプレートはtileTemplate
-        var tile = Instantiate(tileTemplate);
-        tile.GetComponent<Tile>().SetTile(randumInstantiateType[enumRandomNum]);
-        tile.GetComponent<Tile>().tileType = randumInstantiateType[enumRandomNum];
+        var tileObj = Instantiate(tileTemplate);
+        var tile = tileObj.GetComponent<Tile>();
+        tileData.Add(tile);
+        tile.SetTile(randumInstantiateType[enumRandomNum]);
+        tile.tileType = randumInstantiateType[enumRandomNum];
         //生成する親をきめる
-        tile.transform.SetParent(noneTypeBackgraunds[randomNum].transform);
-        tile.transform.localPosition = new Vector3(0, 0, 0);
-        destroyObj = tile;
+        tileObj.transform.SetParent(noneTypeBackgraunds[randomNum].transform);
+        tileObj.transform.localPosition = new Vector3(0, 0, 0);
+        destroyObj = tileObj;
     }
 }
